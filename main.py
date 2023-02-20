@@ -71,6 +71,8 @@ def main():
             if(pt1.decode() == m1.decode()):
                 print('matching key: ', curr_key)
                 print('decrypted plaintext: ', pt1)
+                
+                break
 
         except:
             pass
