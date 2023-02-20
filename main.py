@@ -15,7 +15,7 @@ def PrintStr(ctype, val):
 def UpdateKey(val):
 
     new_key = int.from_bytes(val, 'big')
-    new_key += new_key
+    new_key += 1
     new_key = bitstring_to_bytes(bin(new_key))
 
     return new_key
