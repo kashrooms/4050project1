@@ -59,21 +59,23 @@ def main():
     #create byte string  for 128 bit key
     full_key = bitstring_to_bytes(bin(full_key_val))
     PrintStr('128-bit key', full_key)
+    
+    curr_key = full_key
 
     #loop to check all key possibilites for matching key
     for i in range(partial_key_val):
 
         try:
-            pt1 = decryptor_CTR(c1, nonce1, full_key)
+            pt1 = decryptor_CTR(c1, nonce1, curr_key)
 
             if(pt1.decode() == m1.decode()):
-                print('matching key: ', full_key)
+                print('matching key: ', curr_key)
                 print('decrypted plaintext: ', pt1)
 
         except:
             pass
 
-        UpdateKey(full_key)
+        curr_key = UpdateKey(curr_key)
 
     print('finished search')
 
