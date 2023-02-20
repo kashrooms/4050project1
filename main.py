@@ -22,12 +22,11 @@ def UpdateKey(val):
 
 #driver function
 def main():
+    
     #read plaintext from files
     m1 = string_to_bytes(read_file('m1.txt'))
     m2 = string_to_bytes(read_file('m2.txt'))
     m3 = string_to_bytes(read_file('m3.txt'))
-
-    dm1 = m1.decode()
 
     PrintStr('m1', m1)
     PrintStr('m2', m2)
