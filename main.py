@@ -11,11 +11,16 @@ from utils_demo import *
 def PrintStr(ctype, val):
     print(ctype, ': ', val)
 
-#function to increment key to be searched
+#function to increment key to be searched by 1
 def UpdateKey(val):
 
+    #convert key from bytes to integer
     new_key = int.from_bytes(val, 'big')
+
+    #increment by 1
     new_key += 1
+
+    #convert key back to bytes
     new_key = bitstring_to_bytes(bin(new_key))
 
     return new_key
@@ -36,6 +41,7 @@ def main():
     c1 = read_bytes('c1.bin')
     c2 = read_bytes('c2.bin')
     c3 = read_bytes('c3.bin')
+    c_c = read_bytes('c_c.bin')
 
     PrintStr('c1', c1)
     PrintStr('c2', c2)
@@ -45,6 +51,7 @@ def main():
     nonce1 = read_bytes('nonce1.bin')
     nonce2 = read_bytes('nonce2.bin')
     nonce3 = read_bytes('nonce3.bin')
+    nonce_c = read_bytes('nonce_c.bin')
 
     PrintStr('nonce1', nonce1)
     PrintStr('nonce2', nonce2)
@@ -59,27 +66,54 @@ def main():
     #create byte string  for 128 bit key
     full_key = bitstring_to_bytes(bin(full_key_val))
     PrintStr('128-bit key', full_key)
-    
+
     curr_key = full_key
 
     #loop to check all key possibilites for matching key
     for i in range(partial_key_val):
 
         try:
+
+            #decrypt using given ciphertext1, nonce1, and current key possibility
             pt1 = decryptor_CTR(c1, nonce1, curr_key)
 
+            #check if decrypted plaintext matches given plaintext1
             if(pt1.decode() == m1.decode()):
-                print('matching key: ', curr_key)
-                print('decrypted plaintext: ', pt1)
-                
-                break
+
+                #decrypt remaining plaintext/ciphertext pairs
+                pt2 = decryptor_CTR(c2, nonce2, curr_key)
+                pt3 = decryptor_CTR(c3, nonce3, curr_key)
+
+                #check if decrypted plaintext matches given m2 and m3
+                if(pt2.decode() == m2.decode() and pt3.decode() == m3.decode()):
+
+                    #get challenge message using found key and given nonce and ciphertext
+                    pt_c = decryptor_CTR(c_c, nonce_c, curr_key)
+
+                    #convert found key to bit string
+                    found_key = bin(int.from_bytes(curr_key, 'big'))
+            
+                    #print decrypted plaintext and matching key
+                    print('decrypted plaintext 1: ', pt1.decode())
+                    print('decrypted plaintext 2: ', pt2.decode())
+                    print('decrypted plaintext 3: ', pt3.decode())
+                    print('challenge plaintext: ', pt_c.decode())
+                    print('matching key in hex bytes: ', curr_key)
+                    print('matching key in bits: ', found_key)
+
+                    #write message and key to file
+                    write_file('keystr.txt', found_key)
+                    write_file('m_c.txt', pt_c.decode())
+
+                    break
 
         except:
             pass
 
+        #increment current key by 1
         curr_key = UpdateKey(curr_key)
 
-    print('finished search')
+    print('Done...')
 
 if __name__=="__main__":
     main()
